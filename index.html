@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RFID Data Display</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto px-4 py-8">
+        <h1 class="text-3xl font-bold text-center mb-6">RFID Data</h1>
+        <table id="rfidTable" class="min-w-full bg-white border border-gray-300 rounded-lg shadow-md">
+            <thead>
+                <tr class="bg-gray-200">
+                    <th class="py-2 px-4 border-b text-left">ID</th>
+                    <th class="py-2 px-4 border-b text-left">RFID Value</th>
+                    <th class="py-2 px-4 border-b text-left">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Data will be inserted here -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        // Function to fetch RFID data from the PHP backend
+        function fetchRFIDData() {
+            fetch('http://localhost/fetch_rfid_data.php') // Adjust this to your path
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json(); // Parse the response as JSON
+                })
+                .then(data => {
+                    const tableBody = document.querySelector("#rfidTable tbody");
+                    tableBody.innerHTML = ''; // Clear any existing data
+
+                    // Loop through each RFID record and insert into the table
+                    data.forEach(item => {
+                        const row = document.createElement("tr");
+
+                        const idCell = document.createElement("td");
+                        idCell.textContent = item.id;
+                        idCell.classList.add("py-2", "px-4", "border-b", "border-gray-300");
+                        row.appendChild(idCell);
+
+                        const rfidCell = document.createElement("td");
+                        rfidCell.textContent = item.rfid_value;
+                        rfidCell.classList.add("py-2", "px-4", "border-b", "border-gray-300");
+                        row.appendChild(rfidCell);
+
+                        const statusCell = document.createElement("td");
+                        statusCell.textContent = item.status == 1 ? "Active" : "Inactive";
+                        statusCell.classList.add("py-2", "px-4", "border-b", "border-gray-300");
+                        row.appendChild(statusCell);
+
+                        tableBody.appendChild(row);
+                    });
+                })
+                .catch(error => console.error('Error fetching RFID data:', error));
+        }
+
+        // Fetch the data when the page loads
+        window.onload = fetchRFIDData;
+    </script>
+</body>
+</html>
